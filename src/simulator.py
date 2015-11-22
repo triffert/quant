@@ -20,7 +20,7 @@ class Simulator:
 		result = pd.DataFrame(index=self.dates)
 		# Pretty sure there is a nicer way to initialize the data frame
 		result['Bank'] = pd.np.nan
-		bank = self.bankroll
+		bank = self.capital
 		for time in self.dates:
 			bank = strategy(
 						bank=bank,
