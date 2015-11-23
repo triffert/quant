@@ -1,9 +1,12 @@
 #import pandas as pd
 #import simulator as ss
 
-def strategy_nothing(bank, data, portfolio, time, stocks, fees):
-	# Do not buy stocks - Baseline for all comparisons
-	return bank
+# TODO: Rewrite to fit new structure
+
+
+def strategy_nothing(data, depot, time):
+	# Do not do anything - Baseline for trivial comparisons
+	pass
 
 def strategy_inter_day_even(bank, data, portfolio, time, stocks, fees):
 	'''

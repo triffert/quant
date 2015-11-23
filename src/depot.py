@@ -17,7 +17,7 @@ class Depot:
 		Args:
 			capital (float): starting capital
 			fees (float): transaction fees (applied to every buy and sell)
-			portfolio (DataFrame): specifies the owned stocks
+			portfolio (pd.DataFrame): specifies the owned stocks
 		'''
 		# Copy parameters to class variables
 		self.capital = capital
@@ -29,6 +29,21 @@ class Depot:
 		else:
 			# Reference the parameter to the class variable
 			self.portfolio = portfolio
+
+
+	def monetize(self, prices):
+		'''
+		Sell all stocks remaining in the portfolio for the specified price.
+		
+		Args:
+			prices (pd.Series): Price per stock
+		'''
+		# If stocks are owned
+		if not self.portfolio.empty:
+			# Go through all of them
+			for stock in self.portfolio.index.levels[0]:
+				# Sell all
+				self.sell(stock, prices.loc[stock])
 
 
 	def buy(self, stock, price, quant=None):

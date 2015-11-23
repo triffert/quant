@@ -1,18 +1,23 @@
-# Global imports
-#import pandas as pd
 # Local imports
 import financedata as fd
-reload(fd)
-import simulator as si
-reload(si)
-import strategies as st
-reload(st)
+import simulator as sim
+import depot as dp
+import strategies as strat
 
-F = fd.FinanceData(name_list=fd.DAX)
-S = si.Simulator(
-					bankroll=10000,
-					strategy=st.strategy_inter_day_even_hold_if_less,
-					finance=F,
-					fees=0
-				)
-X = S.run()
+# Reload for edits in module financedata to take place
+reload(fd)
+# Load the first three DAX companies to F 
+F = fd.FinanceData(name_list=fd.DAX[:3])
+
+# Reload for edits in module depot to take place
+reload(dp)
+# Create a depot
+D = dp.Depot(capital=10000, fees=1)
+
+# Reload for edits in module simulator to take place
+reload(sim)
+reload(strat)
+# Initiate simulator
+S = sim.Simulator(finance_data=F, depot=D, strategy=strat.strategy_nothing)
+# Run simulator and plot result
+S.run().plot()
