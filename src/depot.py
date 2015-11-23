@@ -61,11 +61,10 @@ class Depot:
 				the maximum amount of stocks that can be purchased with the
 				current self.capital balance is purchased.
 		'''
-		# If invalid quant value, raise exception
-		if quant <= 0:
-			raise ValueError('Variable quant needs to be a positive integer!') 
+		# If invalid quant value return
+		if quant <= 0: return
 		# Determine if capital is sufficient for quantity
-		if quant is None or self.capital < quant * price:
+		if quant is None or self.capital < quant * price + self.fees:
 			quant = int(self.capital / price)
 		# Pay for stock and pay transaction fee
 		self.capital -= quant * price + self.fees
@@ -100,10 +99,7 @@ class Depot:
 				the current portfolio) is sold.
 		'''
 		# If invalid quant value or stock is not owned, do not do anything
-		if quant <= 0:
-			raise ValueError('Variable quant needs to be a positive integer!')
-		if stock not in self.portfolio.index:
-			raise ValueError('Unowned stock can not be sold!')
+		if quant <= 0 or stock not in self.portfolio.index: return
 		# Determine if the asked number of stocks is owned
 		if quant is None or quant > self.portfolio.loc[stock]['Quantity']:
 			quant = self.portfolio.loc[stock]['Quantity']

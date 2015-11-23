@@ -1,70 +1,50 @@
-#import pandas as pd
-#import simulator as ss
+# Import external packages
+import pandas as pd
 
-# TODO: Rewrite to fit new structure
+#===============================================================================
+# Module containing strategies
+#===============================================================================
 
+def no_trade(data, depot, time, **kwargs):
+	'''
+	Basic non-strategy. Only for testing purposes.
 
-def strategy_nothing(data, depot, time):
+	Args:
+		data (pd.DataFrame: the financial data on which calculations are
+			to be performed.
+		depot (Depot object): depot for the strategy 
+		time (pd.timestep): point in time the strategy is applied
+	'''
 	# Do not do anything - Baseline for trivial comparisons
 	pass
 
-def strategy_inter_day_even(bank, data, portfolio, time, stocks, fees):
+def inter_day_even(data, depot, time, **kwargs):
 	'''
-	Buy at end of previous day sell at opening of current day.
-	Uniformly distribute money for all stocks
-	'''
-	# Calculate amount of money available per purchase
-	bank_per_stock = bank / len(stocks) - fees
-	# Initialization of output variable
-	new_bank = bank
-	# Purchase of stocks and monetization
-	for stock in stocks:
-		if time in data.loc[stock].index \
-			and bank_per_stock >= data.loc[stock,time]['Prev_Close']:
-			# Determine number of stocks that can be bought
-			n_stocks = int(bank_per_stock / data.loc[stock,time]['Prev_Close'])
-			# Buy previous day stocks and then sell them at opening price
-			new_bank -= n_stocks * data.loc[stock,time]['Prev_Close'] + fees
-			new_bank += n_stocks * data.loc[stock,time]['Open']
-		else:
-			new_bank += bank_per_stock + fees
-	# Return the new bank roll
-	return new_bank
-
-def strategy_inter_day_even_hold_if_less(bank, data, portfolio, time, stocks, fees):
-	'''
-	Buy at end of previous day sell at opening of current day.
-	As long as open price dropped compared to closing price keep them.
+	Buy at closing price of previous day sell at opening of current day. 
 	Uniformly distribute money for all stocks.
+	
+	Args:
+		data (pd.DataFrame: the financial data on which calculations are
+			to be performed.
+		depot (Depot object): depot for the strategy 
+		time (pd.timestep): point in time the strategy is applied
 	'''
+	# Get list of available stocks
+	available = data.index.levels[0]
 	# Calculate amount of money available per purchase
-	bank_per_stock = bank / len(stocks) - fees
-	# Initialization of output variable
-	new_bank = bank
+	bank_per_stock = depot.capital / len(available) - depot.fees
 	# Purchase of stocks and monetization
-	for stock in stocks:
-		if time in data.loc[stock].index \
-			and bank_per_stock >= data.loc[stock,time]['Prev_Close']:
-			# Determine number of stocks that can be bought
-			n_stocks = int(bank_per_stock / data.loc[stock,time]['Prev_Close'])
-			new_bank -= fees + n_stocks * data.loc[stock,time]['Prev_Close']
-			# Portfolio at purchase
-			new_bank -= n_stocks * data.loc[stock,time]['Prev_Close'] + fees
-			print portfolio.loc[stock]['n_stock']
-			portfolio.loc[stock]['n_stock'] += n_stocks 
-			print portfolio.loc[stock]['n_stock']
-			# Buy previous day stocks and then sell them at opening price
-			if data.loc[stock,time]['Open'] > data.loc[stock,time]['Prev_Close']:
-				new_bank += portfolio.loc[stock]['n_stock']\
-							 * data.loc[stock,time]['Open']
-		else:
-			new_bank += bank_per_stock + fees
-	# Return the new bank roll
-	return new_bank
-
-def strategy_inter_kelley_crit_cov(bank, data, portfolio, time, stocks, fees):
-	'''
-	Buy at end of previous day sell at opening of current day.
-	Distribute according to kelley criterion based on mean of previous sales
-	'''
-	pass
+	for stock in available:
+		if time in data.loc[stock].index:
+			# Get previous day closing price
+			prev_close_price = data.loc[stock].shift(-1).loc[time]['Close']
+			# Only if the previous data exists purchase
+			if not pd.np.isnan(prev_close_price):
+				# Determine number of stocks that can be bought.
+				n_stocks = max(int(bank_per_stock / prev_close_price), 0)
+				# Buy n_stocks at previous day closing price
+				depot.buy(stock=stock, price=prev_close_price, quant=n_stocks)
+				# Current opening price
+				cur_open_price = data.loc[stock,time]['Open']
+				# Sell those stocks at current open pruce
+				depot.sell(stock=stock, price=cur_open_price, quant=n_stocks)

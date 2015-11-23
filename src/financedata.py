@@ -39,7 +39,7 @@ class FinanceData:
 		# Load the data
 		self.load_data()
 		# Enrich the data
-		#self.enrich_data()
+		self.enrich_data()
 		
 
 	def load_data(self):
@@ -88,9 +88,11 @@ class FinanceData:
 
 def within_day(data, rel=False):
 	'''
-	Calculates the difference between opening an closing price
+	Calculates the difference between opening an closing price.
 	
 	Args:
+		data (pd.DataFrame: the financial data on which calculations are
+			to be performed.
 		rel (boolean): if set to false, the absolute difference is returned,
 			else the relative difference is returned.
 	
@@ -112,6 +114,8 @@ def between_day(data, rel=True):
 	previous day.
 	
 	Args:
+		data (pd.DataFrame: The financial data on which calculations are
+			to be performed.
 		rel (boolean): if set to false, the absolute difference is returned,
 			else the relative difference is returned.
 	
