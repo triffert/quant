@@ -1,14 +1,12 @@
-################################################################################
-# A small script for playing around with the Yahoo-finance API
-################################################################################
-
+# External module imports
 import yahoo_finance as yf
 import pandas as pd
 
-# TODO: Split into seperate modules
+#===============================================================================
+# Global module variables
+#===============================================================================
 
-# Fees per trade in bank roll units
-FEES = 1
+# Start and end time for data collection used as default values
 START = pd.to_datetime('2013-11-01')
 END = pd.to_datetime('2014-11-01')
 
@@ -19,13 +17,16 @@ DAX = ['ADS.DE','ALV.DE','BAS.DE','BAYN.DE','BEI.DE','BMW.DE','CBK.DE',
 		'LXS.DE','MRK.DE','MUV2.DE','RWE.DE','SAP.DE','SDF.DE','SIE.DE',
 		'TKA.DE','VOW3.DE']
 
+#===============================================================================
+# Class for finance Data 
+#===============================================================================
+
 class FinanceData:
 	'''
 	Class containing financial data, loading, cleaning and enriching functions 
 	'''
 		
-	def __init__(self, name_list, start_date=START,
-				end_date=END):
+	def __init__(self, name_list, start_date=START,	end_date=END):
 		'''
 		Constructor
 		'''
@@ -33,18 +34,18 @@ class FinanceData:
 		self.name_list = name_list
 		self.start_date = start_date
 		self.end_date = end_date
+		# Create empty data frame for containing the finance data
+		self.data = pd.DataFrame()
 		# Load the data
 		self.load_data()
 		# Enrich the data
-		self.enrich_data()
+		#self.enrich_data()
 		
 
 	def load_data(self):
 		'''
-		Loads data as specified by class variables
+		Loads data using the yahoo finance python api
 		'''
-		print 'Loading data'
-		self.data = pd.DataFrame()
 		# Iterate over the name_list
 		for i,name in enumerate(self.name_list):
 			print '... Loading:', name, 'Index', i+1, 'of', len(self.name_list)
@@ -67,34 +68,60 @@ class FinanceData:
 		'''
 		Collection of function calls to enrich data
 		'''
-		# Enrich with previous closing date for convenience
-		self.data['Prev_Close'] = self.data.groupby(level='Symbol')\
-											.apply(prev_close).values
 		# Enrich with within day uplift
 		self.data['Within_Day'] = self.data.groupby(level='Symbol')\
-											.apply(intra_day).values
+							.apply(lambda x: within_day(x, rel=False)).values
 		# Enrich with between day information
 		self.data['Between_Day'] = self.data.groupby(level='Symbol')\
-											.apply(inter_day).values
+							.apply(lambda x: between_day(x, rel=False)).values
 		# Enrich with within day uplift
 		self.data['Within_Day_Rel'] = self.data.groupby(level='Symbol')\
-											.apply(intra_day_rel).values
+							.apply(lambda x: within_day(x, rel=True)).values
 		# Enrich with between day information
 		self.data['Between_Day_Rel'] = self.data.groupby(level='Symbol')\
-											.apply(inter_day_rel).values
+							.apply(lambda x: between_day(x, rel=True)).values
 
-# Non class functions for enriching
-def prev_close(data):
-	return data['Close'].shift(-1)
 
-def intra_day(data):
-	return data['Close'] - data['Open']
+#===============================================================================
+# Non class functions defining the enriching operations
+#===============================================================================
 
-def inter_day(data):
-	return data['Open'] - data['Close'].shift(-1)
+def within_day(data, rel=False):
+	'''
+	Calculates the difference between opening an closing price
 	
-def intra_day_rel(data):
-	return (data['Close'] - data['Open'])/abs(data['Open'])
+	Args:
+		rel (boolean): if set to false, the absolute difference is returned,
+			else the relative difference is returned.
+	
+	Returns:
+		pd.series of price difference using same index as data.
+	'''
+	# Apply the rel argument
+	if rel:
+		denominator = data['Open']
+	else:
+		denominator = 1.0
+	# Create and return the series object
+	return (data['Close'] - data['Open']) / denominator
 
-def inter_day_rel(data):
-	return (data['Open'] - data['Close'].shift(-1))/abs(data['Close'].shift(-1))
+
+def between_day(data, rel=True):
+	'''
+	Calculates the difference between opening price and closing price of the
+	previous day.
+	
+	Args:
+		rel (boolean): if set to false, the absolute difference is returned,
+			else the relative difference is returned.
+	
+	Returns:
+		pd.series of price difference using same index as data.
+	'''
+	# Apply the rel argument
+	if rel:
+		denominator = data['Close'].shift(-1)
+	else:
+		denominator = 1.0
+	# Create and return the series object
+	return (data['Open'] - data['Close'].shift(-1)) / denominator
