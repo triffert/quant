@@ -32,8 +32,8 @@ class FinanceData:
 		'''
 		# Copy the parameters to class variables
 		self.name_list = name_list
-		self.start_date = start_date
-		self.end_date = end_date
+		self.start_date = pd.to_datetime(start_date)
+		self.end_date = pd.to_datetime(end_date)
 		# Create empty data frame for containing the finance data
 		self.data = pd.DataFrame()
 		# Load the data
@@ -67,20 +67,30 @@ class FinanceData:
 	def enrich_data(self):
 		'''
 		Collection of function calls to enrich data
+		
+		Reshape is necessary for 1 level case due to groupby bug explained here:
+			https://github.com/pydata/pandas/issues/5839
 		'''
 		# Enrich with within day uplift
-		self.data['Within_Day'] = self.data.groupby(level='Symbol')\
-							.apply(lambda x: within_day(x, rel=False)).values
+		self.data['Within_Day'] = pd.np.reshape(
+							self.data.groupby(level='Symbol')\
+							.apply(lambda x: within_day(x, rel=False)).values,
+							(len(self.data,)))
 		# Enrich with between day information
-		self.data['Between_Day'] = self.data.groupby(level='Symbol')\
-							.apply(lambda x: between_day(x, rel=False)).values
+		self.data['Between_Day'] = pd.np.reshape( 
+							self.data.groupby(level='Symbol')\
+							.apply(lambda x: between_day(x, rel=False)).values,
+							(len(self.data,)))
 		# Enrich with within day uplift
-		self.data['Within_Day_Rel'] = self.data.groupby(level='Symbol')\
-							.apply(lambda x: within_day(x, rel=True)).values
+		self.data['Within_Day_Rel'] = pd.np.reshape(
+							self.data.groupby(level='Symbol')\
+							.apply(lambda x: within_day(x, rel=True)).values,
+							(len(self.data,)))
 		# Enrich with between day information
-		self.data['Between_Day_Rel'] = self.data.groupby(level='Symbol')\
-							.apply(lambda x: between_day(x, rel=True)).values
-
+		self.data['Between_Day_Rel'] = pd.np.reshape( 
+							self.data.groupby(level='Symbol')\
+							.apply(lambda x: between_day(x, rel=True)).values,
+							(len(self.data,)))
 
 #===============================================================================
 # Non class functions defining the enriching operations

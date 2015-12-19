@@ -18,6 +18,7 @@ def no_trade(data, depot, time, **kwargs):
 	# Do not do anything - Baseline for trivial comparisons
 	pass
 
+
 def inter_day_even(data, depot, time, **kwargs):
 	'''
 	Buy at closing price of previous day sell at opening of current day. 
@@ -48,3 +49,4 @@ def inter_day_even(data, depot, time, **kwargs):
 				cur_open_price = data.loc[stock,time]['Open']
 				# Sell those stocks at current open pruce
 				depot.sell(stock=stock, price=cur_open_price, quant=n_stocks)
+

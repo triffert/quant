@@ -9,7 +9,7 @@ class Simulator:
 	'''
 	Class for simulating simplest trading strategies and their outcome
 	'''
-	def __init__(self, finance_data, depot, strategy):
+	def __init__(self, finance_data, depot, strategy, start_time=None):
 		'''
 		Constructor of the simulator class
 		
@@ -24,9 +24,16 @@ class Simulator:
 		self.finance = finance_data
 		self.depot = depot
 		self.strategy = strategy
+		self.start_time = start_time
 		# Create sorted list of unique dates from given finance data
 		self.dates = list(set(self.finance.data.reset_index()['Date']))
 		self.dates.sort()
+		# Reduce dates to those after start_time
+		if self.start_time:
+			#List comprehension to apply start date
+			self.dates = [x for x in self.dates if x >= self.start_time]
+		else:
+			self.start_time = min(self.dates)
 		# Create the simulation result object
 		self.result = pd.DataFrame(index=self.dates)
 		self.result['capital'] = pd.np.nan 
