@@ -48,14 +48,14 @@ class FinanceData:
 		'''
 		# Iterate over the name_list
 		for i,name in enumerate(self.name_list):
-			print '... Loading:', name, 'Index', i+1, 'of', len(self.name_list)
+			print('... Loading:', name, 'Index', i+1, 'of', len(self.name_list))
 			# Call the yahoo finance API
 			tmp_data = pd.DataFrame(
 							yf.Share(name).get_historical(
 										self.start_date.strftime('%Y-%m-%d'),
 										self.end_date.strftime('%Y-%m-%d')))
 			# Convert objects to numeric
-			tmp_data = tmp_data.convert_objects(convert_numeric=True)	
+			tmp_data = tmp_data.apply(pd.to_numeric, args=('ignore',))
 			# Append the data
 			self.data = self.data.append(tmp_data)
 		# Convert date to date time object
