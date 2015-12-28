@@ -81,6 +81,21 @@ class FinanceData:
 							self.data.groupby(level='Symbol')\
 							.apply(lambda x: between_day(x, rel=False)).values,
 							(len(self.data,)))
+				# Enrich with between day information
+		self.data['Previous_Day_1'] = pd.np.reshape( 
+							self.data.groupby(level='Symbol')\
+							.apply(lambda x: previous_day(x, rel=False, i=1)).values,
+							(len(self.data,)))
+		# Enrich with between day information
+		self.data['Previous_Day_2'] = pd.np.reshape( 
+							self.data.groupby(level='Symbol')\
+							.apply(lambda x: previous_day(x, rel=False, i=2)).values,
+							(len(self.data,)))
+		# Enrich with between day information
+		self.data['Previous_Day_3'] = pd.np.reshape( 
+							self.data.groupby(level='Symbol')\
+							.apply(lambda x: previous_day(x, rel=False, i=3)).values,
+							(len(self.data,)))
 		# Enrich with within day uplift
 		self.data['Within_Day_Rel'] = pd.np.reshape(
 							self.data.groupby(level='Symbol')\
@@ -91,6 +106,22 @@ class FinanceData:
 							self.data.groupby(level='Symbol')\
 							.apply(lambda x: between_day(x, rel=True)).values,
 							(len(self.data,)))
+		# Enrich with between day information
+		self.data['Previous_Day_Rel_1'] = pd.np.reshape( 
+							self.data.groupby(level='Symbol')\
+							.apply(lambda x: previous_day(x, rel=True, i=1)).values,
+							(len(self.data,)))
+		# Enrich with between day information
+		self.data['Previous_Day_Rel_2'] = pd.np.reshape( 
+							self.data.groupby(level='Symbol')\
+							.apply(lambda x: previous_day(x, rel=True, i=2)).values,
+							(len(self.data,)))
+		# Enrich with between day information
+		self.data['Previous_Day_Rel_3'] = pd.np.reshape( 
+							self.data.groupby(level='Symbol')\
+							.apply(lambda x: previous_day(x, rel=True, i=3)).values,
+							(len(self.data,)))
+		
 
 #===============================================================================
 # Non class functions defining the enriching operations
@@ -111,7 +142,7 @@ def within_day(data, rel=False):
 	'''
 	# Apply the rel argument
 	if rel:
-		denominator = data['Open']
+		denominator = data['Close']
 	else:
 		denominator = 1.0
 	# Create and return the series object
@@ -134,8 +165,31 @@ def between_day(data, rel=True):
 	'''
 	# Apply the rel argument
 	if rel:
-		denominator = data['Close'].shift(-1)
+		denominator = data['Close']
 	else:
 		denominator = 1.0
 	# Create and return the series object
-	return (data['Open'] - data['Close'].shift(-1)) / denominator
+	return (data['Open'].shift(1) - data['Close']) / denominator
+
+
+def previous_day(data, rel=True, i=1):
+	'''
+	Calculates the difference between opening price and closing price of the
+	previous day (i days in the past).
+	
+	Args:
+		data (pd.DataFrame: The financial data on which calculations are
+			to be performed.
+		rel (boolean): if set to false, the absolute difference is returned,
+			else the relative difference is returned.
+	
+	Returns:
+		pd.series of price difference using same index as data.
+	'''
+	# Apply the rel argument
+	if rel:
+		denominator = data['Close']
+	else:
+		denominator = 1.0
+	# Create and return the series object
+	return ((data['Open'].shift(1) - data['Close']) / denominator).shift(-i)
