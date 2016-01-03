@@ -20,11 +20,6 @@ importlib.reload(fd)
 # Load the first three DAX companies to F 
 F = fd.FinanceData(name_list=fd.DAX[:10], start_date=START, end_date=END)
 
-# Reload for edits in module depot to take place
-importlib.reload(dp)
-# Create a depot
-D = dp.Depot(capital=100000, fees=5)
-
 # Build predictor
 import statsmodels.formula.api as sm
 result = sm.ols(formula="Between_Day_Rel ~ Open + High + Low + Close \
@@ -37,10 +32,26 @@ result.summary()
 F.data[['Between_Day_Rel','Within_Day_Rel']].dropna().plot(kind='density',xlim=[-0.02,0.02])
 F.data[['Between_Day_Rel','Within_Day_Rel']].dropna().mean()
 
-# Reload for edits in module simulator to take place
+
+# Reload for edits in module depot to take place
+importlib.reload(dp)
 importlib.reload(sim)
 importlib.reload(strat)
+# Create a depot
+cap=10000
+fee=5
+D0 = dp.Depot(capital=cap, fees=fee)
+D1 = dp.Depot(capital=cap, fees=fee)
+D2 = dp.Depot(capital=cap, fees=fee)
 # Initiate simulator
-S = sim.Simulator(finance_data=F, depot=D, strategy=strat.inter_day_even)
+S0 = sim.Simulator(finance_data=F, depot=D0, strategy=strat.inter_day_even)
+S1 = sim.Simulator(finance_data=F, depot=D1, strategy=strat.inter_day_random)
+S2 = sim.Simulator(finance_data=F, depot=D2, strategy=strat.inter_day_greedy)
 # Run simulator and plot result
-S.run().plot()
+R0 = S0.run()
+R1 = S1.run()
+R2 = S2.run(t_len=1)
+
+R0.plot()
+R1.plot()
+R2.plot()

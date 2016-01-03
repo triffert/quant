@@ -73,54 +73,54 @@ class FinanceData:
 		'''
 		# Enrich with within day uplift
 		self.data['Within_Day'] = pd.np.reshape(
-							self.data.groupby(level='Symbol')\
-							.apply(lambda x: within_day(x, rel=False)).values,
-							(len(self.data,)))
+				self.data.groupby(level='Symbol')\
+				.apply(lambda x: within_day(data=x, rel=False)).values,
+				(len(self.data,)))
 		# Enrich with between day information
 		self.data['Between_Day'] = pd.np.reshape( 
-							self.data.groupby(level='Symbol')\
-							.apply(lambda x: between_day(x, rel=False)).values,
-							(len(self.data,)))
+				self.data.groupby(level='Symbol')\
+				.apply(lambda x: between_day(data=x, rel=False)).values,
+				(len(self.data,)))
 				# Enrich with between day information
 		self.data['Previous_Day_1'] = pd.np.reshape( 
-							self.data.groupby(level='Symbol')\
-							.apply(lambda x: previous_day(x, rel=False, i=1)).values,
-							(len(self.data,)))
+				self.data.groupby(level='Symbol')\
+				.apply(lambda x: previous_day(data=x, rel=False, i=1)).values,
+				(len(self.data,)))
 		# Enrich with between day information
 		self.data['Previous_Day_2'] = pd.np.reshape( 
-							self.data.groupby(level='Symbol')\
-							.apply(lambda x: previous_day(x, rel=False, i=2)).values,
-							(len(self.data,)))
+				self.data.groupby(level='Symbol')\
+				.apply(lambda x: previous_day(data=x, rel=False, i=2)).values,
+				(len(self.data,)))
 		# Enrich with between day information
 		self.data['Previous_Day_3'] = pd.np.reshape( 
-							self.data.groupby(level='Symbol')\
-							.apply(lambda x: previous_day(x, rel=False, i=3)).values,
-							(len(self.data,)))
+				self.data.groupby(level='Symbol')\
+				.apply(lambda x: previous_day(data=x, rel=False, i=3)).values,
+				(len(self.data,)))
 		# Enrich with within day uplift
 		self.data['Within_Day_Rel'] = pd.np.reshape(
-							self.data.groupby(level='Symbol')\
-							.apply(lambda x: within_day(x, rel=True)).values,
-							(len(self.data,)))
+				self.data.groupby(level='Symbol')\
+				.apply(lambda x: within_day(data=x, rel=True)).values,
+				(len(self.data,)))
 		# Enrich with between day information
 		self.data['Between_Day_Rel'] = pd.np.reshape( 
-							self.data.groupby(level='Symbol')\
-							.apply(lambda x: between_day(x, rel=True)).values,
-							(len(self.data,)))
+				self.data.groupby(level='Symbol')\
+				.apply(lambda x: between_day(data=x, rel=True)).values,
+				(len(self.data,)))
 		# Enrich with between day information
 		self.data['Previous_Day_Rel_1'] = pd.np.reshape( 
-							self.data.groupby(level='Symbol')\
-							.apply(lambda x: previous_day(x, rel=True, i=1)).values,
-							(len(self.data,)))
+				self.data.groupby(level='Symbol')\
+				.apply(lambda x: previous_day(data=x, rel=True, i=1)).values,
+				(len(self.data,)))
 		# Enrich with between day information
 		self.data['Previous_Day_Rel_2'] = pd.np.reshape( 
-							self.data.groupby(level='Symbol')\
-							.apply(lambda x: previous_day(x, rel=True, i=2)).values,
-							(len(self.data,)))
+				self.data.groupby(level='Symbol')\
+				.apply(lambda x: previous_day(data=x, rel=True, i=2)).values,
+				(len(self.data,)))
 		# Enrich with between day information
 		self.data['Previous_Day_Rel_3'] = pd.np.reshape( 
-							self.data.groupby(level='Symbol')\
-							.apply(lambda x: previous_day(x, rel=True, i=3)).values,
-							(len(self.data,)))
+				self.data.groupby(level='Symbol')\
+				.apply(lambda x: previous_day(data=x, rel=True, i=3)).values,
+				(len(self.data,)))
 		
 
 #===============================================================================

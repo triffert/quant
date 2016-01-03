@@ -61,11 +61,11 @@ class Depot:
 				the maximum amount of stocks that can be purchased with the
 				current self.capital balance is purchased.
 		'''
-		# If invalid quant value return
-		if quant <= 0: return
 		# Determine if capital is sufficient for quantity
 		if quant is None or self.capital < quant * price + self.fees:
-			quant = int(self.capital / price)
+			quant = int( (self.capital - self.fees) / price)
+		# If invalid quant value return
+		if quant <= 0: return
 		# Pay for stock and pay transaction fee
 		self.capital -= quant * price + self.fees
 		# Add stock to portfolio
@@ -98,13 +98,17 @@ class Depot:
 				the maximum amount of stocks that can be sold (as determined by
 				the current portfolio) is sold.
 		'''
-		# If invalid quant value or stock is not owned, do not do anything
-		if quant <= 0 or stock not in self.portfolio.index: return
+		# If stock is not owned, do not do anything
+		if stock not in self.portfolio.index: return
 		# Determine if the asked number of stocks is owned
 		if quant is None or quant > self.portfolio.loc[stock]['Quantity']:
 			quant = self.portfolio.loc[stock]['Quantity']
+		# If invalid quant value, do not do anything
+		if quant <= 0: return
+		# Calculate taxes (Abgeltungssteuer und Solidaritätszuschlag)
+		taxes = max(0.0, 0.26375 * (price - (self.portfolio.loc[stock]['Price'])))
 		# Add money to capital and pay transaction fees
-		self.capital += quant * price - self.fees
+		self.capital += quant * price - self.fees - taxes * quant
 		# Remove stocks from portfolio
 		self.portfolio.loc[stock]['Quantity'] -= quant
 		# Delete row if all stocks were sold
