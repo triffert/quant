@@ -17,6 +17,8 @@ DAX = ['ADS.DE','ALV.DE','BAS.DE','BAYN.DE','BEI.DE','BMW.DE','CBK.DE',
 		'LXS.DE','MRK.DE','MUV2.DE','RWE.DE','SAP.DE','SDF.DE','SIE.DE',
 		'TKA.DE','VOW3.DE']
 
+DAX = pd.np.random.permutation(DAX)
+
 #===============================================================================
 # Class for finance Data 
 #===============================================================================
