@@ -38,11 +38,11 @@ importlib.reload(dp)
 importlib.reload(sim)
 importlib.reload(strat)
 # Create a depot
-cap=10000
-fee=5
-D0 = dp.Depot(capital=cap, fees=fee)
-D1 = dp.Depot(capital=cap, fees=fee)
-D2 = dp.Depot(capital=cap, fees=fee)
+capital=10000
+fees=5
+D0 = dp.Depot(capital=capital, fees=fees)
+D1 = dp.Depot(capital=capital, fees=fees)
+D2 = dp.Depot(capital=capital, fees=fees)
 # Initiate simulator
 S0 = sim.Simulator(finance_data=F, depot=D0, strategy=strat.inter_day_even)
 S1 = sim.Simulator(finance_data=F, depot=D1, strategy=strat.inter_day_random)
@@ -51,7 +51,7 @@ S2 = sim.Simulator(finance_data=F, depot=D2, strategy=strat.inter_day_greedy)
 R0 = S0.run()
 R1 = S1.run()
 R2 = S2.run(t_len=1)
-
+# Do all plots
 R0.plot()
 R1.plot()
 R2.plot()
