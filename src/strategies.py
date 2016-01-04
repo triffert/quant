@@ -79,7 +79,7 @@ def inter_day_greedy(data, depot, time, **kwargs):
 		return sum([y > 0 for y in x.iloc[0:t_len][field]])/float(t_len)
 	# Apply counting to given data
 	p_inter['p_pos'] =  data.groupby(level='Symbol')\
-				.apply(lambda x: p_pos(x,kwargs['t_len'])).values
+				.apply(lambda x: p_pos(x, kwargs['t_len'])).values
 	# Chose stock based on passed data
 	chosen_stock = p_inter.idxmax()[0]
 	# Ensure stock is traded on given date

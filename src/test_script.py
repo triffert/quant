@@ -21,16 +21,16 @@ importlib.reload(fd)
 F = fd.FinanceData(name_list=fd.DAX[:10], start_date=START, end_date=END)
 
 # Build predictor
-import statsmodels.formula.api as sm
-result = sm.ols(formula="Between_Day_Rel ~ Open + High + Low + Close \
-					+ Previous_Day_Rel_1 + Previous_Day_Rel_2 \
-					+ Previous_Day_Rel_3",\
-					data=F.data).fit()
-result.summary()
+#import statsmodels.formula.api as sm
+#result = sm.ols(formula="Between_Day_Rel ~ Open + High + Low + Close \
+					#+ Previous_Day_Rel_1 + Previous_Day_Rel_2 \
+					#+ Previous_Day_Rel_3",\
+					#data=F.data).fit()
+#result.summary()
 
 # Plot relationship of data
-F.data[['Between_Day_Rel','Within_Day_Rel']].dropna().plot(kind='density',xlim=[-0.02,0.02])
-F.data[['Between_Day_Rel','Within_Day_Rel']].dropna().mean()
+#F.data[['Between_Day_Rel','Within_Day_Rel']].dropna().plot(kind='density',xlim=[-0.02,0.02])
+#F.data[['Between_Day_Rel','Within_Day_Rel']].dropna().mean()
 
 
 # Reload for edits in module depot to take place
@@ -38,7 +38,7 @@ importlib.reload(dp)
 importlib.reload(sim)
 importlib.reload(strat)
 # Create a depot
-capital=10000
+capital=1000
 fees=5
 D0 = dp.Depot(capital=capital, fees=fees)
 D1 = dp.Depot(capital=capital, fees=fees)
@@ -55,3 +55,5 @@ R2 = S2.run(t_len=1)
 R0.plot()
 R1.plot()
 R2.plot()
+
+
